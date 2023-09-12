@@ -166,7 +166,11 @@ RetryStateImpl::~RetryStateImpl() { resetRetry(); }
 
 void RetryStateImpl::enableBackoffTimer() {
   if (!retry_timer_) {
-    retry_timer_ = dispatcher_.createTimer([this]() -> void { backoff_callback_(); });
+    retry_timer_ = dispatcher_.createTimer([this]() -> void {
+      if (backoff_callback_ != nullptr) {
+        backoff_callback_();
+      }
+    });
   }
 
   if (ratelimited_backoff_strategy_ != nullptr) {
